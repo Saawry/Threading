@@ -22,14 +22,19 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    /*
-    Another way to access ui component from background thread is to use uiComponent.post() method directly.
-    Theres another way that is using runOnUiThread{} which is an activity function.
-      */
-    fun startThread(view: View) {
-        val exampleRunnable = ExampleRunnable(10)
-        Thread(exampleRunnable).start()
 
+    fun startThread(view: View) {
+        //Easy way
+        Thread(object:Runnable{
+            override fun run() {
+                //work to be done
+            }
+        }).start()
+
+        //Easy way lambda
+        Thread {
+            //work to be done
+        }.start()
     }
 
 
