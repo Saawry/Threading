@@ -20,16 +20,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-    The Solution is executing long running task in a background thread. One way of creating background
-     thread is Extending Tread class. Another way is implementing Runnable Interface and passing that in a
-     new thread.
+    Running runnable by runnable.run() will execute the code, UI will be frozen but won't show ANR
+    and will complete pending tasks after completion of runnable.
       */
     fun startThread(view: View) {
-        val exampleThread =ExampleThread(10)
-        exampleThread.start()
+        val exampleRunnable = ExampleRunnable(10)
+        exampleRunnable.run()
 
-        val exampleRunnable =ExampleRunnable(10)
-        Thread(exampleRunnable).start()
+        val exampleThread=ExampleThread(10)
+        exampleThread.start()
     }
 
 
