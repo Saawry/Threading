@@ -1,6 +1,7 @@
 package com.mostafiz.android.multithreading
 
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +10,7 @@ import com.mostafiz.android.multithreading.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
      lateinit var binding: ActivityMainBinding
+     private val mainHandler= Handler()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityMainBinding.inflate(layoutInflater)
@@ -20,8 +22,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-    If we try to access the UI component from background thread, CalledFromWrongThreadException occurs.
-    It says "Only the original thread that created a view hierarchy can touch its views"
+    To access a ui component from background thread, we need Handler. UI components are not thread safe.
+    They can only be accessed from the thread where they are created. Handler communicates with different threads.
+    I brings the works to the message queue. Only the Handlers are created in main thread, can access the main thread.
       */
     fun startThread(view: View) {
         val exampleRunnable = ExampleRunnable(10)
@@ -35,7 +38,12 @@ class MainActivity : AppCompatActivity() {
             for (i in 0 until counter) {
 
                 if (i==5){
-                    binding.buttonStartThread.text = "Running"
+                    mainHandler.post(object:Runnable{
+                        override fun run() {
+                            binding.buttonStartThread.text = "Running"
+                        }
+                    })
+
                 }
                 Log.d("Tag_Thread_Run", "Runnable is running: $i")
                 try {
