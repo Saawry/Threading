@@ -2,6 +2,7 @@ package com.mostafiz.android.multithreading
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -22,9 +23,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-    To access a ui component from background thread, we need Handler. UI components are not thread safe.
-    They can only be accessed from the thread where they are created. Handler communicates with different threads.
-    I brings the works to the message queue. Only the Handlers are created in main thread, can access the main thread.
+    Only the Handlers are created in main thread, can access the main thread. The attempt to access
+     the main thread component without main Looper will show error "Can't create handler inside thread
+      Thread[Thread-2,5,main] that has not called Looper.prepare()". To Solve it, We use Looper.getMainLooper.
       */
     fun startThread(view: View) {
         val exampleRunnable = ExampleRunnable(10)
@@ -38,7 +39,8 @@ class MainActivity : AppCompatActivity() {
             for (i in 0 until counter) {
 
                 if (i==5){
-                    mainHandler.post(object:Runnable{
+                    val handler=Handler(Looper.getMainLooper())
+                    handler.post(object:Runnable{
                         override fun run() {
                             binding.buttonStartThread.text = "Running"
                         }
