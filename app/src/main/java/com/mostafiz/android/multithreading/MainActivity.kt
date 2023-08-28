@@ -1,8 +1,6 @@
 package com.mostafiz.android.multithreading
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -10,58 +8,34 @@ import com.mostafiz.android.multithreading.databinding.ActivityMainBinding
 
 
 class MainActivity : AppCompatActivity() {
-     lateinit var binding: ActivityMainBinding
-     private val mainHandler= Handler()
+    lateinit var binding: ActivityMainBinding
+
+    @Volatile
+    var stopFlag = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding= ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
     }
 
     fun stopThread(view: View) {
-
+        stopFlag = true
     }
 
 
     fun startThread(view: View) {
         //Easy way
-        Thread(object:Runnable{
-            override fun run() {
-                //work to be done
-            }
-        }).start()
-
-        //Easy way lambda
-        Thread {
-            //work to be done
-        }.start()
+        Thread(ExampleRunnable(10)).start()
     }
 
 
     inner class ExampleRunnable(private val counter:Int):Runnable{
         override fun run() {
             for (i in 0 until counter) {
-
-                if (i==5){
-                    //way 1
-                    binding.buttonStartThread.post(object:Runnable{
-                        override fun run() {
-                            binding.buttonStartThread.text = "Running"
-                        }
-                    })
-                    //way 1 lambda
-                    binding.buttonStartThread.post { binding.buttonStartThread.text = "Running" }
-
-                    //way 2
-                    runOnUiThread(object:Runnable{
-                        override fun run() {
-                            binding.buttonStartThread.text = "Running"
-                        }
-
-                    })
-                    //way 2 lambda
+                if (stopFlag)
+                    return
+                if (i == 5) {
                     runOnUiThread { binding.buttonStartThread.text = "Running" }
-
                 }
                 Log.d("Tag_Thread_Run", "Runnable is running: $i")
                 try {
