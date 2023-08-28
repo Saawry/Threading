@@ -8,7 +8,7 @@ import com.mostafiz.android.multithreading.databinding.ActivityMainBinding
 
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+     lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityMainBinding.inflate(layoutInflater)
@@ -20,21 +20,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-    Running runnable by runnable.run() will execute the code, UI will be frozen but won't show ANR
-    and will complete pending tasks after completion of runnable.
+    If we try to access the UI component from background thread, CalledFromWrongThreadException occurs.
+    It says "Only the original thread that created a view hierarchy can touch its views"
       */
     fun startThread(view: View) {
         val exampleRunnable = ExampleRunnable(10)
-        exampleRunnable.run()
+        Thread(exampleRunnable).start()
 
-        val exampleThread=ExampleThread(10)
-        exampleThread.start()
     }
 
 
-    class ExampleRunnable(private val counter:Int):Runnable{
+    inner class ExampleRunnable(private val counter:Int):Runnable{
         override fun run() {
             for (i in 0 until counter) {
+
+                if (i==5){
+                    binding.buttonStartThread.text = "Running"
+                }
                 Log.d("Tag_Thread_Run", "Runnable is running: $i")
                 try {
                     Thread.sleep(1000)
